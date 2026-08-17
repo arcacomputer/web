@@ -8,7 +8,7 @@ test('Astro emits a static site for the canonical domain', async () => {
   const config = await read('astro.config.mjs');
   assert.match(config, /site:\s*['"]https:\/\/arca\.computer['"]/);
   assert.match(config, /output:\s*['"]static['"]/);
-  assert.match(config, /sitemap\(\)/);
+  assert.match(config, /sitemap\(\{\s*customPages:\s*\['https:\/\/arca\.computer\/deck'\]\s*\}\)/);
 });
 
 test('Cloudflare publishes only dist with no provider preview origins', async () => {

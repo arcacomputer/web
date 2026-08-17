@@ -25,4 +25,7 @@ assert.equal((html.match(/id="top"/g) ?? []).length, 1);
 
 const robots = await read('robots.txt');
 assert.match(robots, /Sitemap: https:\/\/arca\.computer\/sitemap-index\.xml/);
+
+const sitemap = await read('sitemap-0.xml');
+assert.match(sitemap, /<loc>https:\/\/arca\.computer\/deck<\/loc>/);
 console.log('Built-site contract passed.');
