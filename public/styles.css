@@ -1132,8 +1132,8 @@ footer a:hover {
   .contact-link {
     grid-column: 1;
     margin-top: 12px;
-    overflow-wrap: anywhere;
-    font-size: clamp(20px, 7.4vw, 34px);
+    font-size: clamp(18px, 5.6vw, 26px);
+    white-space: nowrap;
   }
 
   footer {
@@ -1214,4 +1214,18 @@ footer a:hover {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+
+.error-page {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 1.5rem;
+  max-width: 52rem;
+  padding: 8vw;
+}
+
+.error-page h1 {
+  margin: 0;
 }

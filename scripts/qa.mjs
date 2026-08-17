@@ -1,0 +1,57 @@
+import { chromium } from 'playwright';
+import AxeBuilder from 'axe-core';
+import { writeFile } from 'node:fs/promises';
+
+const baseURL = process.env.SITE_URL ?? 'http://127.0.0.1:8787';
+const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true });
+const results = {};
+
+for (const [name, viewport] of Object.entries({
+  desktop: { width: 1440, height: 1000 },
+  mobile: { width: 390, height: 844 },
+})) {
+  const context = await browser.newContext({ viewport });
+  const page = await context.newPage();
+  const consoleErrors = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => consoleErrors.push(error.message));
+  const response = await page.goto(baseURL, { waitUntil: 'networkidle' });
+  await page.screenshot({ path: `artifacts/${name}.png`, fullPage: true });
+  await page.addScriptTag({ content: AxeBuilder.source });
+  const axe = await page.evaluate(async () => globalThis.axe.run(document));
+  const metrics = await page.evaluate(() => {
+    const contact = document.querySelector('.contact-link');
+    const contactRange = document.createRange();
+    if (contact) contactRange.selectNodeContents(contact);
+    return {
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+      title: document.title,
+      h1: document.querySelector('h1')?.textContent?.replace(/\s+/g, ' ').trim(),
+      contactLines: contact ? new Set([...contactRange.getClientRects()].map((rect) => Math.round(rect.top))).size : 0,
+    };
+  });
+  results[name] = {
+    status: response?.status(),
+    consoleErrors,
+    metrics,
+    axeViolations: axe.violations.map(({ id, impact, nodes }) => ({ id, impact, nodes: nodes.length })),
+  };
+  await page.close();
+  await context.close();
+}
+
+await browser.close();
+await writeFile('artifacts/qa.json', JSON.stringify(results, null, 2) + '\n');
+
+for (const [name, result] of Object.entries(results)) {
+  if (result.status !== 200) throw new Error(`${name}: expected HTTP 200`);
+  if (result.consoleErrors.length) throw new Error(`${name}: browser errors: ${result.consoleErrors.join('; ')}`);
+  if (result.metrics.scrollWidth !== result.metrics.clientWidth) throw new Error(`${name}: horizontal overflow`);
+  if (result.metrics.contactLines !== 1) throw new Error(`${name}: contact link wraps onto ${result.metrics.contactLines} lines`);
+  if (result.axeViolations.length) throw new Error(`${name}: axe violations: ${JSON.stringify(result.axeViolations)}`);
+}
+
+console.log(JSON.stringify(results, null, 2));
