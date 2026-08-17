@@ -18,4 +18,4 @@ npm run preview
 
 ## Deployment
 
-Production is deployed from the tested `main` branch to the Arca Computer Cloudflare account. The Vercel deployment remains a temporary rollback target until the Cloudflare cutover is fully verified.
+Production will deploy from the tested `main` branch to the Arca Computer Cloudflare account after the company zone is attached and the first deployment is verified. The Vercel deployment remains the live rollback target until that cutover passes.

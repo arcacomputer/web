@@ -26,12 +26,20 @@ test('Cloudflare publishes only dist with no provider preview origins', async ()
   ]);
 });
 
-test('the Worker redirects www while preserving path and query', async () => {
+test('the Worker canonicalizes www and HTTP while preserving path and query', async () => {
   const { default: worker } = await import('../src/worker.js');
   const env = { ASSETS: { fetch: async () => new Response('asset', { status: 200 }) } };
-  const response = await worker.fetch(new Request('https://www.arca.computer/deck?from=test'), env);
+  const response = await worker.fetch(new Request('http://www.arca.computer/deck?from=test'), env);
   assert.equal(response.status, 308);
   assert.equal(response.headers.get('location'), 'https://arca.computer/deck?from=test');
+});
+
+test('the Worker redirects HTTP apex requests to HTTPS', async () => {
+  const { default: worker } = await import('../src/worker.js');
+  const env = { ASSETS: { fetch: async () => new Response('asset', { status: 200 }) } };
+  const response = await worker.fetch(new Request('http://arca.computer/company?from=test'), env);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get('location'), 'https://arca.computer/company?from=test');
 });
 
 test('the Worker serves assets on the canonical host', async () => {

@@ -10,7 +10,7 @@ for (const [name, viewport] of Object.entries({
   desktop: { width: 1440, height: 1000 },
   mobile: { width: 390, height: 844 },
 })) {
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({ viewport, ignoreHTTPSErrors: true });
   const page = await context.newPage();
   const consoleErrors = [];
   page.on('console', (message) => {

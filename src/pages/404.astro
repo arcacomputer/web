@@ -2,7 +2,13 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Page not found — Arca Computer">
+<BaseLayout
+  title="Page not found — Arca Computer"
+  description="This page could not be found on Arca Computer."
+  canonicalPath={null}
+  noindex
+  structuredData={false}
+>
   <main class="error-page" id="content">
     <p class="eyebrow">404 / Signal lost</p>
     <h1>Page not found.</h1>
