@@ -1,9 +1,11 @@
 import { chromium } from 'playwright';
 import AxeBuilder from 'axe-core';
+import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 
 const baseURL = process.env.SITE_URL ?? 'http://127.0.0.1:8787';
-const browser = await chromium.launch({ headless: true });
+const systemChrome = '/usr/bin/google-chrome';
+const browser = await chromium.launch({ executablePath: existsSync(systemChrome) ? systemChrome : undefined, headless: true });
 const results = {};
 
 for (const [name, viewport] of Object.entries({
