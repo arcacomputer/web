@@ -54,3 +54,33 @@ test('migration removes Vercel configuration and includes a custom 404', async (
   await assert.rejects(read('vercel.json'));
   assert.match(await read('src/pages/404.astro'), /Page not found/);
 });
+
+test('the company deck reflects the current August 30 product state', async () => {
+  const deck = await read('public/deck/index.html');
+
+  for (const expected of [
+    'Agent Launchpad',
+    'Private preview',
+    'Durable memory',
+    'AgentMail',
+    'Multi-runtime',
+    'Open Hardware Lab',
+    'Web3 field index',
+    'Hypersnap Doctor',
+    '2,051+',
+    '11 company · 31 agent · 33 founder',
+    'August 30, 2026',
+  ]) {
+    assert.match(deck, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+
+  for (const stale of [
+    '1,771+',
+    '207+ diagnoses',
+    'Metrics verified August 2, 2026',
+    'github.com/arcabotai/hypersnap"',
+    'SMS · RCS · iMessage integration',
+  ]) {
+    assert.doesNotMatch(deck, new RegExp(stale.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+});

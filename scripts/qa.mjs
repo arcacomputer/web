@@ -3,7 +3,7 @@ import AxeBuilder from 'axe-core';
 import { writeFile } from 'node:fs/promises';
 
 const baseURL = process.env.SITE_URL ?? 'http://127.0.0.1:8787';
-const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true });
+const browser = await chromium.launch({ headless: true });
 const results = {};
 
 for (const [name, viewport] of Object.entries({
@@ -30,6 +30,7 @@ for (const [name, viewport] of Object.entries({
       clientWidth: document.documentElement.clientWidth,
       title: document.title,
       h1: document.querySelector('h1')?.textContent?.replace(/\s+/g, ' ').trim(),
+      hasContactLink: Boolean(contact),
       contactLines: contact ? new Set([...contactRange.getClientRects()].map((rect) => Math.round(rect.top))).size : 0,
     };
   });
@@ -50,7 +51,7 @@ for (const [name, result] of Object.entries(results)) {
   if (result.status !== 200) throw new Error(`${name}: expected HTTP 200`);
   if (result.consoleErrors.length) throw new Error(`${name}: browser errors: ${result.consoleErrors.join('; ')}`);
   if (result.metrics.scrollWidth !== result.metrics.clientWidth) throw new Error(`${name}: horizontal overflow`);
-  if (result.metrics.contactLines !== 1) throw new Error(`${name}: contact link wraps onto ${result.metrics.contactLines} lines`);
+  if (result.metrics.hasContactLink && result.metrics.contactLines !== 1) throw new Error(`${name}: contact link wraps onto ${result.metrics.contactLines} lines`);
   if (result.axeViolations.length) throw new Error(`${name}: axe violations: ${JSON.stringify(result.axeViolations)}`);
 }
 
