@@ -57,6 +57,7 @@ test('migration removes Vercel configuration and includes a custom 404', async (
 
 test('the company deck reflects the current August 30 product state', async () => {
   const deck = await read('public/deck/index.html');
+  const styles = await read('public/deck/styles.css');
 
   for (const expected of [
     'Agent Launchpad',
@@ -68,6 +69,7 @@ test('the company deck reflects the current August 30 product state', async () =
     'Web3 field index',
     'Hypersnap Doctor',
     '2,051+',
+    'Deterministic ClawFix detectors',
     '11 company · 31 agent · 33 founder',
     'August 30, 2026',
   ]) {
@@ -80,7 +82,15 @@ test('the company deck reflects the current August 30 product state', async () =
     'Metrics verified August 2, 2026',
     'github.com/arcabotai/hypersnap"',
     'SMS · RCS · iMessage integration',
+    'clawfix.dev',
+    'WarpletScan',
+    'Daytona',
+    '$10K',
+    '$50K',
+    '<strong>Live</strong><span>Agent Launchpad',
   ]) {
     assert.doesNotMatch(deck, new RegExp(stale.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
+
+  assert.match(styles, /\.deck-header nav a\s*\{[^}]*min-height:\s*24px/s);
 });

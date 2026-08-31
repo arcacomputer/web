@@ -67,7 +67,10 @@ a:focus-visible, [tabindex="-1"]:focus-visible { outline: 2px solid var(--signal
 .mark circle { fill: var(--signal); }
 .deck-label { color: var(--bronze); }
 .deck-header nav { display: flex; justify-content: flex-end; gap: 22px; }
-.deck-header nav a { color: var(--muted); text-decoration: none; }
+.deck-header nav a {
+  min-height: 24px; display: inline-flex; align-items: center;
+  padding-block: 7px; color: var(--muted); text-decoration: none;
+}
 .deck-header nav a:hover { color: var(--paper); }
 
 .rail {
@@ -219,8 +222,9 @@ h2 { max-width: 900px; font-size: clamp(48px, 6.7vw, 90px); line-height: .95; }
 .closing { grid-column: 1 / -1; margin: 18px 0 0; color: var(--muted); font: 400 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 
 @media (max-width: 1080px) {
+  main { scroll-snap-type: none; }
   .rail { display: none; }
-  .slide { padding-inline: 32px; }
+  .slide { min-height: auto; padding-inline: 32px; overflow: visible; scroll-snap-align: none; }
   .split-slide, .launchpad-layout, .world-layout, .proof-layout, .system-layout, .ask-layout { grid-template-columns: 1fr; }
   .cover-grid { grid-template-columns: minmax(0,1fr) 250px; }
   .world-card { min-height: 420px; }
