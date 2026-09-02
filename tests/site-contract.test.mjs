@@ -94,3 +94,39 @@ test('the company deck reflects the current August 30 product state', async () =
 
   assert.match(styles, /\.deck-header nav a\s*\{[^}]*min-height:\s*24px/s);
 });
+
+const literal = (value) => new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+test('the homepage motion layer is progressive and reduced-motion aware', async () => {
+  const layout = await read('src/layouts/BaseLayout.astro');
+  const page = await read('src/pages/index.astro');
+  const styles = await read('public/styles.css');
+
+  assert.match(layout, /documentElement\.classList\.add\('js'\)/);
+  assert.match(layout, /rel="preconnect" href="https:\/\/fonts\.gstatic\.com"/);
+  assert.match(layout, /fonts\.googleapis\.com\/css2\?family=DM\+Mono/);
+  assert.doesNotMatch(styles, /@import/);
+  assert.match(styles, /@media \(prefers-reduced-motion: no-preference\)/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /html\.js \[data-reveal\]/);
+  assert.match(page, /class="signal-board" aria-hidden="true"/);
+  assert.match(page, /<h1 id="hero-title">[\s\S]*The company[\s\S]*is the computer\.[\s\S]*<\/h1>/);
+  assert.match(page, /import \{ initMotion \} from '\.\.\/scripts\/motion'/);
+  assert.match(page, /import \{ mountSignalBoard \} from '\.\.\/scripts\/signal-board'/);
+});
+
+test('the homepage links to the deck and repeats the deck metrics exactly', async () => {
+  const page = await read('src/pages/index.astro');
+  const deck = await read('public/deck/index.html');
+
+  assert.match(page, /<nav aria-label="Primary navigation">[\s\S]*href="\/deck"[\s\S]*<\/nav>/);
+  assert.match(page, /class="button button-secondary" href="\/deck"/);
+
+  for (const figure of ['2,051+', '11 company · 31 agent · 33 founder', 'August 30, 2026']) {
+    assert.match(page, literal(figure));
+    assert.match(deck, literal(figure));
+  }
+  assert.match(page, /data-count="75"/);
+  assert.match(page, /data-count="2051" data-suffix="\+"/);
+  assert.match(page, /data-count="49"/);
+});

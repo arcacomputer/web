@@ -20,6 +20,17 @@ for (const [name, viewport] of Object.entries({
   });
   page.on('pageerror', (error) => consoleErrors.push(error.message));
   const response = await page.goto(baseURL, { waitUntil: 'networkidle' });
+  // Walk the page so scroll-triggered reveals have fired before screenshots and axe run.
+  await page.evaluate(async () => {
+    const step = Math.max(240, Math.round(window.innerHeight * 0.6));
+    const height = document.documentElement.scrollHeight;
+    for (let y = 0; y <= height; y += step) {
+      window.scrollTo({ top: y, behavior: 'instant' });
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+  await page.waitForTimeout(1500);
   await page.screenshot({ path: `artifacts/${name}.png`, fullPage: true });
   await page.addScriptTag({ content: AxeBuilder.source });
   const axe = await page.evaluate(async () => globalThis.axe.run(document));
