@@ -8,6 +8,7 @@ const systemChrome = '/usr/bin/google-chrome';
 const browser = await chromium.launch({ executablePath: existsSync(systemChrome) ? systemChrome : undefined, headless: true });
 const results = {};
 
+for (const path of ['/', '/deck']) {
 for (const [name, viewport] of Object.entries({
   desktop: { width: 1440, height: 1000 },
   mobile: { width: 390, height: 844 },
@@ -19,8 +20,20 @@ for (const [name, viewport] of Object.entries({
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('pageerror', (error) => consoleErrors.push(error.message));
-  const response = await page.goto(baseURL, { waitUntil: 'networkidle' });
-  await page.screenshot({ path: `artifacts/${name}.png`, fullPage: true });
+  const label = path === '/' ? name : `${name}-${path.slice(1)}`;
+  const response = await page.goto(new URL(path, baseURL).href, { waitUntil: 'networkidle' });
+  // Walk the page so scroll-triggered reveals have fired before screenshots and axe run.
+  await page.evaluate(async () => {
+    const step = Math.max(240, Math.round(window.innerHeight * 0.6));
+    const height = document.documentElement.scrollHeight;
+    for (let y = 0; y <= height; y += step) {
+      window.scrollTo({ top: y, behavior: 'instant' });
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: `artifacts/${label}.png`, fullPage: true });
   await page.addScriptTag({ content: AxeBuilder.source });
   const axe = await page.evaluate(async () => globalThis.axe.run(document));
   const metrics = await page.evaluate(() => {
@@ -36,7 +49,7 @@ for (const [name, viewport] of Object.entries({
       contactLines: contact ? new Set([...contactRange.getClientRects()].map((rect) => Math.round(rect.top))).size : 0,
     };
   });
-  results[name] = {
+  results[label] = {
     status: response?.status(),
     consoleErrors,
     metrics,
@@ -44,6 +57,7 @@ for (const [name, viewport] of Object.entries({
   };
   await page.close();
   await context.close();
+}
 }
 
 await browser.close();

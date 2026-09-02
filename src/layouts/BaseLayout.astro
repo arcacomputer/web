@@ -5,6 +5,7 @@ export interface Props {
   canonicalPath?: string | null;
   noindex?: boolean;
   structuredData?: boolean;
+  stylesheet?: string;
 }
 
 const {
@@ -13,6 +14,7 @@ const {
   canonicalPath = '/',
   noindex = false,
   structuredData = true,
+  stylesheet = '/styles.css',
 } = Astro.props;
 const canonicalURL = canonicalPath === null ? null : new URL(canonicalPath, Astro.site).href;
 ---
@@ -50,7 +52,15 @@ const canonicalURL = canonicalPath === null ? null : new URL(canonicalPath, Astr
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>{title}</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href={stylesheet} />
+    <link rel="stylesheet" href="/motion.css" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
 
     {structuredData && (
       <script type="application/ld+json" is:inline>

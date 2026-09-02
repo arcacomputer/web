@@ -84,7 +84,7 @@ a:focus-visible, [tabindex="-1"]:focus-visible { outline: 2px solid var(--signal
 }
 .rail a:hover, .rail a[aria-current="true"] { color: var(--signal); border-color: var(--line-strong); background: var(--signal-soft); }
 
-main { scroll-snap-type: y proximity; }
+main { position: relative; z-index: 1; scroll-snap-type: y proximity; }
 main:focus { outline: none; }
 .slide {
   position: relative; min-height: 100svh; display: grid; align-items: center;
@@ -281,14 +281,57 @@ h2 { max-width: 900px; font-size: clamp(48px, 6.7vw, 90px); line-height: .95; }
   .proof-links { grid-template-columns: 1fr; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
-}
-
 @media print {
-  .deck-header, .rail, .grain, .skip-link { display: none; }
+  .deck-header, .rail, .grain, .skip-link, .signal-board { display: none; }
   body { background: var(--ink); }
   .slide { min-height: 100vh; break-after: page; padding: 52px; }
   .slide:last-child { break-after: auto; }
+}
+
+/* Deck motion: entrance choreography and cover diagram (engine in /motion.css). */
+.deck-header::after {
+  position: absolute; right: 0; bottom: -1px; left: 0; height: 1px; content: "";
+  background: var(--signal); transform: scaleX(var(--progress, 0)); transform-origin: left;
+}
+.deck-header.is-condensed { background: rgba(13,20,18,.9); }
+
+h1 .line { display: block; overflow: hidden; padding: .08em 0 .18em; margin: -.08em 0 -.18em; }
+h1 .line > span { display: block; }
+
+.metrics strong { font-variant-numeric: tabular-nums; }
+.range-grid a.glow { --glow: var(--bronze-rgb); }
+.system-loop li { transition: background .3s var(--ease-out); }
+.system-loop li:hover { background: rgba(17,27,24,.7); }
+.launchpad-grid article { transition: background .3s var(--ease-out); }
+.launchpad-grid article:hover { background: rgba(17,27,24,.75); }
+
+.cover-diagram span { transition: opacity .6s var(--ease-out), translate .6s var(--ease-out); }
+.cover-diagram .signal-packet { fill: #dbfff5; stroke: none; transition: opacity .8s ease 3.4s; }
+.cover-diagram[data-draw] path { transition-delay: .9s; }
+.cover-diagram.is-drawn circle:nth-of-type(1) { transition-delay: 1s; }
+.cover-diagram.is-drawn circle:nth-of-type(2) { transition-delay: 1.4s; }
+.cover-diagram.is-drawn circle:nth-of-type(3) { transition-delay: 1.8s; }
+.cover-diagram.is-drawn circle:nth-of-type(4) { transition-delay: 2.2s; }
+.cover-diagram.is-drawn circle:nth-of-type(5) { transition-delay: 2.6s; }
+.cover-diagram.is-drawn circle:nth-of-type(6) { transition-delay: 3s; }
+.cover-diagram.is-drawn span:nth-of-type(1) { transition-delay: 1s; }
+.cover-diagram.is-drawn span:nth-of-type(2) { transition-delay: 1.4s; }
+.cover-diagram.is-drawn span:nth-of-type(3) { transition-delay: 1.8s; }
+.cover-diagram.is-drawn span:nth-of-type(4) { transition-delay: 2.2s; }
+.cover-diagram.is-drawn span:nth-of-type(5) { transition-delay: 2.6s; }
+.cover-diagram.is-drawn span:nth-of-type(6) { transition-delay: 3s; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .deck-header { animation: fade-down .8s var(--ease-out) backwards; }
+  html.js .rail { animation: board-in 1s var(--ease-out) .6s backwards; }
+  html.js .cover .kicker { animation: fade-up .7s var(--ease-out) .12s backwards; }
+  html.js .cover h1 .line > span { animation: rise 1s var(--ease-out) .2s backwards; }
+  html.js .cover h1 .line-2 > span { animation-delay: .3s; }
+  html.js .cover .lead { animation: fade-up .8s var(--ease-out) .48s backwards; }
+  html.js .cover-index p { animation: fade-up .8s var(--ease-out) backwards; animation-delay: calc(.6s + var(--i, 0) * 80ms); }
+  html.js .cover-index p:nth-child(2) { --i: 1; }
+  html.js .cover-index p:nth-child(3) { --i: 2; }
+  html.js .cover-index p:nth-child(4) { --i: 3; }
+  html.js .cover-diagram { animation: fade-up .9s var(--ease-out) .8s backwards; }
+  html.js .cover-diagram:not(.is-drawn) span { opacity: 0; translate: 0 6px; }
 }

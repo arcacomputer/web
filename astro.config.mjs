@@ -4,5 +4,6 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://arca.computer',
   output: 'static',
-  integrations: [sitemap({ customPages: ['https://arca.computer/deck'] })],
+  trailingSlash: 'never',
+  integrations: [sitemap()],
 });
