@@ -8,6 +8,8 @@ await Promise.all([
   exists('index.html'),
   exists('404.html'),
   exists('styles.css'),
+  exists('motion.css'),
+  exists('deck/styles.css'),
   exists('robots.txt'),
   exists('sitemap-index.xml'),
   exists('og-image.png'),

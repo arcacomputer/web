@@ -1,14 +1,15 @@
 /**
- * Motion layer for the Arca Computer homepage.
+ * Motion layer shared by the Arca Computer pages.
  *
- * Everything here is progressive enhancement: the page is fully readable with
- * this script absent, and every hidden-until-revealed rule in styles.css is
+ * Everything here is progressive enhancement: each page is fully readable with
+ * this script absent, and every hidden-until-revealed rule in motion.css is
  * scoped to `html.js` + `prefers-reduced-motion: no-preference`.
  */
 
 const REVEAL_SELECTOR = '[data-reveal], [data-reveal-line], [data-reveal-stagger] > *';
-const HIGHLIGHT_SELECTOR =
-  '.work-card, .proof-grid > a, .agent-grid > article, .founder-card, .metrics-strip > a';
+const HIGHLIGHT_SELECTOR = '.glow';
+const HEADER_SELECTOR = '.masthead, .deck-header';
+const SECTION_LINK_SELECTOR = '.masthead nav a[href^="#"], .rail a[href^="#"]';
 const STAGGER_STEP_MS = 70;
 const REVEAL_MS = 800;
 
@@ -50,11 +51,12 @@ function setupReveal(): void {
   targets.forEach((el) => observer.observe(el));
 }
 
-function setupMasthead(): void {
-  const masthead = document.querySelector<HTMLElement>('.masthead');
-  if (!masthead) return;
+/** Condensed header, scroll-progress hairline, and the active section link. */
+function setupHeader(): void {
+  const header = document.querySelector<HTMLElement>(HEADER_SELECTOR);
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(SECTION_LINK_SELECTOR));
+  if (!header && links.length === 0) return;
 
-  const links = Array.from(masthead.querySelectorAll<HTMLAnchorElement>('nav a[href^="#"]'));
   const sections = links
     .map((link) => ({ link, section: document.getElementById(link.hash.slice(1)) }))
     .filter((entry): entry is { link: HTMLAnchorElement; section: HTMLElement } => entry.section !== null);
@@ -63,9 +65,11 @@ function setupMasthead(): void {
   const update = () => {
     scheduled = false;
     const y = window.scrollY;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    masthead.classList.toggle('is-condensed', y > 24);
-    masthead.style.setProperty('--progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0');
+    if (header) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      header.classList.toggle('is-condensed', y > 24);
+      header.style.setProperty('--progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0');
+    }
 
     // The active section is the last one whose top has passed 40% of the viewport.
     const probe = window.innerHeight * 0.4;
@@ -194,58 +198,62 @@ function screenLength(path: SVGPathElement): number {
   return total;
 }
 
-function setupSignalMap(): void {
-  const map = document.querySelector<HTMLElement>('.signal-map');
-  if (!map) return;
-  const paths = Array.from(map.querySelectorAll<SVGPathElement>('.signal-line, .signal-glow'));
-  const canDraw =
-    paths.length > 0 &&
-    !reduceMotion.matches &&
-    'IntersectionObserver' in window &&
-    typeof paths[0].getTotalLength === 'function';
+/** Every [data-draw] container draws its SVG paths on when it scrolls into view. */
+function setupDrawings(): void {
+  const containers = Array.from(document.querySelectorAll<HTMLElement>('[data-draw]'));
+  if (containers.length === 0) return;
 
-  if (!canDraw) {
-    map.classList.add('is-drawn');
-    return;
-  }
+  for (const container of containers) {
+    const paths = Array.from(container.querySelectorAll<SVGPathElement>('path'));
+    const canDraw =
+      paths.length > 0 &&
+      !reduceMotion.matches &&
+      'IntersectionObserver' in window &&
+      typeof paths[0].getTotalLength === 'function';
 
-  const prime = () => {
-    for (const path of paths) {
-      const length = Math.ceil(screenLength(path)) + 2;
-      path.style.strokeDasharray = `${length}`;
-      path.style.strokeDashoffset = `${length}`;
+    if (!canDraw) {
+      container.classList.add('is-drawn');
+      continue;
     }
-    map.classList.add('is-primed');
-  };
-  prime();
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      observer.disconnect();
-      // Re-measure right before drawing in case the layout changed since priming.
-      prime();
-      window.requestAnimationFrame(() => {
-        map.classList.add('is-drawn');
-        for (const path of paths) path.style.strokeDashoffset = '0';
-      });
-      window.setTimeout(() => {
-        for (const path of paths) {
-          path.style.strokeDasharray = '';
-          path.style.strokeDashoffset = '';
-        }
-      }, 2600);
-    },
-    { threshold: 0.35 },
-  );
-  observer.observe(map);
+    const prime = () => {
+      for (const path of paths) {
+        const length = Math.ceil(screenLength(path)) + 2;
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      }
+      container.classList.add('is-primed');
+    };
+    prime();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        // Re-measure right before drawing in case the layout changed since priming.
+        prime();
+        window.requestAnimationFrame(() => {
+          container.classList.add('is-drawn');
+          for (const path of paths) path.style.strokeDashoffset = '0';
+        });
+        window.setTimeout(() => {
+          for (const path of paths) {
+            path.style.strokeDasharray = '';
+            path.style.strokeDashoffset = '';
+          }
+        }, 3600);
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(container);
+  }
 }
 
 export function initMotion(): void {
   setupReveal();
-  setupMasthead();
+  setupHeader();
   setupPointerHighlight();
   setupMagneticButtons();
   setupCounters();
-  setupSignalMap();
+  setupDrawings();
 }

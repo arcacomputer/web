@@ -1,0 +1,247 @@
+/* Shared motion layer for arca.computer pages. Loaded after each page's own stylesheet. */
+
+:root {
+  --signal-rgb: 104, 219, 195;
+  --bronze-rgb: 192, 139, 84;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-micro: 180ms;
+  --t-reveal: 800ms;
+}
+
+/* Decorative canvas layer behind the first screen. */
+.signal-board {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 0;
+  height: min(100vh, 920px);
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.4) 34%, #000 60%),
+    linear-gradient(180deg, #000 58%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.4) 34%, #000 60%),
+    linear-gradient(180deg, #000 58%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.signal-board canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Magnetic buttons (class added by motion.ts). */
+.button.is-magnetic {
+  transition:
+    border-color var(--t-micro) ease,
+    background var(--t-micro) ease,
+    color var(--t-micro) ease,
+    transform 0.4s var(--ease-out);
+}
+
+.button.is-magnetic.is-returning {
+  transition-duration: var(--t-micro), var(--t-micro), var(--t-micro), 0.6s;
+  transition-timing-function: ease, ease, ease, var(--ease-spring);
+}
+
+/* Self-drawing diagrams: any [data-draw] container with SVG paths and circles. */
+[data-draw] path {
+  transition: stroke-dashoffset 2.2s var(--ease-io);
+}
+
+[data-draw] circle {
+  transition: opacity 0.5s var(--ease-out);
+}
+
+/* Pointer-follow highlight and border glow on .glow cards. */
+@media (hover: hover) and (pointer: fine) {
+  .glow {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .glow::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: "";
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      380px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(var(--glow, var(--signal-rgb)), 0.11),
+      transparent 62%
+    );
+    transition: opacity 0.4s var(--ease-out);
+  }
+
+  .glow::after {
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    padding: 1px;
+    content: "";
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(var(--glow, var(--signal-rgb)), 0.8),
+      transparent 60%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: opacity 0.4s var(--ease-out);
+  }
+
+  .glow:hover::before,
+  .glow:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .signal-board {
+    height: min(100vh, 760px);
+    opacity: 0.6;
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+    -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+    mask-composite: add;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.42;
+    filter: drop-shadow(0 0 2px var(--signal));
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(112%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes board-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .signal-board {
+    animation: board-in 2s var(--ease-out) 0.35s backwards;
+  }
+
+  /* Scroll reveals: hidden only when the motion script can run. */
+  html.js [data-reveal]:not(.is-done),
+  html.js [data-reveal-stagger] > :not(.is-done) {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(5px);
+    transition:
+      opacity var(--t-reveal) var(--ease-out),
+      transform var(--t-reveal) var(--ease-out),
+      filter var(--t-reveal) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  html.js [data-reveal].is-in:not(.is-done),
+  html.js [data-reveal-stagger] > .is-in:not(.is-done) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Diagram nodes stay hidden until the line has drawn itself. */
+  html.js [data-draw]:not(.is-drawn) circle {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .signal-packet {
+    display: none;
+  }
+
+  .signal-board {
+    opacity: 0.7;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.15s !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media print {
+  .signal-board,
+  .signal-packet {
+    display: none;
+  }
+
+  html.js [data-reveal],
+  html.js [data-reveal-stagger] > *,
+  html.js [data-draw] circle {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  [data-draw] path {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

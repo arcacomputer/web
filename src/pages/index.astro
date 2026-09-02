@@ -112,7 +112,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <div class="work-grid" data-reveal-stagger>
-          <article class="work-card work-card-featured">
+          <article class="work-card work-card-featured glow">
             <div class="card-topline">
               <span>Primary product</span>
               <span class="status-pill" data-state="open">MIT licensed</span>
@@ -126,7 +126,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <a class="card-link" href="https://clawfix.dev/">Run diagnostics <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="work-card work-card-featured">
+          <article class="work-card work-card-featured glow">
             <div class="card-topline">
               <span>Supporting infrastructure</span>
               <span class="status-pill" data-state="open">Open source</span>
@@ -140,7 +140,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <a class="card-link" href="https://a3stack.arcabot.ai/">Open A3Stack <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="work-card">
+          <article class="work-card glow">
             <div class="card-topline">
               <span>Playable world</span>
               <span class="status-pill" data-state="live">Live</span>
@@ -151,7 +151,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <a class="card-link" href="https://castaway.social/world">Visit the island <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="work-card">
+          <article class="work-card glow">
             <div class="card-topline">
               <span>Farcaster client</span>
               <span class="status-pill" data-state="beta">Public beta</span>
@@ -162,7 +162,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <a class="card-link" href="https://castora.social/">Open Castora <span aria-hidden="true">↗</span></a>
           </article>
 
-          <article class="work-card">
+          <article class="work-card glow">
             <div class="card-topline">
               <span>Node operations</span>
               <span class="status-pill" data-state="open">Independent tooling</span>
@@ -187,7 +187,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
         </div>
 
-        <div class="signal-map" role="img" aria-label="Human direction flows through specialist agent execution to a working public artifact" data-reveal>
+        <div class="signal-map" role="img" aria-label="Human direction flows through specialist agent execution to a working public artifact" data-reveal data-draw>
           <div class="signal-copy signal-copy-start">
             <span>Input / 001</span>
             <strong>Human direction</strong>
@@ -235,7 +235,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <div class="agent-grid" data-reveal-stagger>
-          <article>
+          <article class="glow">
             <div class="agent-head">
               <span class="agent-code">AR / 01</span>
               <svg class="sigil" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
@@ -247,7 +247,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <strong>Primary operator</strong>
             <p>Strategy, product direction, and durable execution across the company.</p>
           </article>
-          <article>
+          <article class="glow">
             <div class="agent-head">
               <span class="agent-code">CD / 02</span>
               <svg class="sigil" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
@@ -259,7 +259,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <strong>Scout + builder</strong>
             <p>Experiments, implementation, verification, and deployment.</p>
           </article>
-          <article>
+          <article class="glow">
             <div class="agent-head">
               <span class="agent-code">AD / 03</span>
               <svg class="sigil" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
@@ -271,7 +271,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <strong>Knowledge steward</strong>
             <p>Source-backed guidance for Hypersnap, Snapchain, and Farcaster-fork builders.</p>
           </article>
-          <article>
+          <article class="glow">
             <div class="agent-head">
               <span class="agent-code">ME / 04</span>
               <svg class="sigil" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
@@ -283,7 +283,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <strong>OSS release steward</strong>
             <p>Upstream reconnaissance, proof packets, and merge-quality work.</p>
           </article>
-          <article>
+          <article class="glow">
             <div class="agent-head">
               <span class="agent-code">CO / 05</span>
               <svg class="sigil" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
@@ -316,19 +316,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <div class="metrics-strip" aria-label="Current public engineering metrics" data-reveal-stagger>
-          <a href="https://oss.arcabot.ai/">
+          <a class="glow" href="https://oss.arcabot.ai/">
             <strong data-count="75">75</strong>
             <span>Public, non-fork repositories: 11 company · 31 agent · 33 founder</span>
           </a>
-          <a href="https://www.npmjs.com/package/clawfix">
+          <a class="glow" href="https://www.npmjs.com/package/clawfix">
             <strong data-count="2051" data-suffix="+">2,051+</strong>
             <span>ClawFix npm downloads since February 22, 2026</span>
           </a>
-          <a href="https://github.com/arcabotai/clawfix">
+          <a class="glow" href="https://github.com/arcabotai/clawfix">
             <strong data-count="49">49</strong>
             <span>Deterministic ClawFix detectors in the public package and source</span>
           </a>
-          <a href="https://github.com/arcabotai/arca-openclaw-contributions">
+          <a class="glow" href="https://github.com/arcabotai/arca-openclaw-contributions">
             <strong>Open</strong>
             <span>Upstream ledger with pull requests, reviews, and exact merge states</span>
           </a>
@@ -336,16 +336,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <p class="as-of" data-reveal>Metrics and public status verified August 30, 2026. Unavailable evidence is not counted as live.</p>
 
         <div class="proof-grid" data-reveal-stagger>
-          <a href="https://oss.arcabot.ai/">
+          <a class="glow" href="https://oss.arcabot.ai/">
             <span>01</span><strong>OSS index</strong><small>Licensed repositories, ownership labels, and maintenance boundaries.</small><i aria-hidden="true">↗</i>
           </a>
-          <a href="https://github.com/arcabotai/arca-openclaw-contributions">
+          <a class="glow" href="https://github.com/arcabotai/arca-openclaw-contributions">
             <span>02</span><strong>Upstream ledger</strong><small>Pull requests, reviews, merge states, and exact public evidence.</small><i aria-hidden="true">↗</i>
           </a>
-          <a href="https://github.com/arcabotai">
+          <a class="glow" href="https://github.com/arcabotai">
             <span>03</span><strong>GitHub</strong><small>Source, releases, packages, experiments, and working artifacts.</small><i aria-hidden="true">↗</i>
           </a>
-          <a href="https://arcabot.ai/">
+          <a class="glow" href="https://arcabot.ai/">
             <span>04</span><strong>Arca ecosystem</strong><small>The wider product catalogue, public agent system, and onchain identity.</small><i aria-hidden="true">↗</i>
           </a>
         </div>
@@ -374,7 +374,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <div><dt>Primary work</dt><dd>Products · developer infrastructure · open source</dd></div>
           </dl>
 
-          <article class="founder-card" data-reveal>
+          <article class="founder-card glow" data-reveal>
             <span class="monogram" aria-hidden="true">LFA</span>
             <p class="section-index">Founder / 001</p>
             <h3>Luis Felipe Abarca</h3>
